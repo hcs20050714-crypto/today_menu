@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지? 🍴</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .animate-spin-slow {
+            animation: spin 0.1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: scale(1.05); }
+            to { transform: scale(0.95); }
+        }
+        
+        .result-appear {
+            animation: appear 0.5s ease-out;
+        }
+        
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .button-hover {
+            transition: all 0.3s ease;
+        }
+
+        .button-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <!-- Main Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+            <!-- Header -->
+            <div class="text-center">
+                <h1 class="text-4xl font-black text-gray-800 mb-2">오늘 뭐 먹지? 🍴</h1>
+                <p class="text-gray-500 text-sm">고민 끝! 메뉴 추천받기</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">지역명</label>
+                    <input 
+                        type="text" 
+                        id="locationInput"
+                        placeholder="예: 나성동, 강남역"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                    >
+                </div>
+
+                <!-- Button Group -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button 
+                        onclick="selectMenu('lunch')"
+                        class="button-hover bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold py-4 rounded-xl shadow-lg">
+                        🍱 점심 메뉴
+                    </button>
+                    <button 
+                        onclick="selectMenu('dinner')"
+                        class="button-hover bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg">
+                        🍻 회식 메뉴
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="hidden space-y-4">
+                <div class="bg-gradient-to-r from-yellow-100 to-pink-100 rounded-2xl p-6 text-center">
+                    <p class="text-sm font-bold text-gray-600 mb-2">오늘의 추천 메뉴</p>
+                    <p id="resultText" class="text-4xl font-black text-gray-800"></p>
+                </div>
+                
+                <button 
+                    id="mapButton"
+                    onclick="openMap()"
+                    class="button-hover w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg">
+                    📍 내 주변 이 메뉴 식당 보기
+                </button>
+
+                <button 
+                    onclick="reset()"
+                    class="w-full bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition-colors">
+                    다시 선택하기
+                </button>
+            </div>
+
+            <!-- Animation Display -->
+            <div id="animationDisplay" class="hidden">
+                <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-8 text-center">
+                    <p id="animationText" class="text-3xl font-black text-gray-800 animate-spin-slow"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-white text-sm mt-6 opacity-75">
+            Made with ❤️ for food lovers
+        </p>
+    </div>
+
+    <script>
+        // 메뉴 데이터
+        const lunchMenus = [
+            '김치찌개', '된장찌개', '돈가스', '쌀국수', '김밥',
+            '짜장면', '짬뽕', '비빔밥', '제육볶음', '불고기',
+            '순두부찌개', '냉면', '칼국수', '우동', '라면',
+            '김치볶음밥', '오므라이스', '샌드위치', '파스타', '햄버거'
+        ];
+
+        const dinnerMenus = [
+            '한우', '숙성회', '양꼬치', '곱창', '삼겹살',
+            '갈비', '초밥', '샤브샤브', '스테이크', '훠궈',
+            '연어', '랍스터', '킹크랩', '전복', '모둠회',
+            '오마카세', '와규', '장어구이', '대게', '고등어회'
+        ];
+
+        let selectedMenu = '';
+        let selectedLocation = '';
+
+        // 메뉴 선택 함수
+        function selectMenu(type) {
+            const location = document.getElementById('locationInput').value.trim();
+            
+            if (!location) {
+                alert('지역명을 입력해주세요! 😊');
+                return;
+            }
+
+            selectedLocation = location;
+            const menus = type === 'lunch' ? lunchMenus : dinnerMenus;
+            
+            // 애니메이션 시작
+            showAnimation(menus);
+        }
+
+        // 애니메이션 표시
+        function showAnimation(menus) {
+            const animationDisplay = document.getElementById('animationDisplay');
+            const animationText = document.getElementById('animationText');
+            const resultSection = document.getElementById('resultSection');
+            
+            resultSection.classList.add('hidden');
+            animationDisplay.classList.remove('hidden');
+
+            let counter = 0;
+            const interval = setInterval(() => {
+                const randomMenu = menus[Math.floor(Math.random() * menus.length)];
+                animationText.textContent = randomMenu;
+                counter++;
+
+                if (counter >= 10) { // 1초 동안 (100ms * 10)
+                    clearInterval(interval);
+                    showResult(menus);
+                }
+            }, 100);
+        }
+
+        // 결과 표시
+        function showResult(menus) {
+            selectedMenu = menus[Math.floor(Math.random() * menus.length)];
+            
+            const animationDisplay = document.getElementById('animationDisplay');
+            const resultSection = document.getElementById('resultSection');
+            const resultText = document.getElementById('resultText');
+
+            animationDisplay.classList.add('hidden');
+            resultText.textContent = selectedMenu;
+            resultSection.classList.remove('hidden');
+            resultSection.classList.add('result-appear');
+
+            // Confetti 효과
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe']
+            });
+
+            // 추가 confetti
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#fa709a', '#fee140', '#30cfd0']
+                });
+            }, 250);
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#a8edea', '#fed6e3', '#fddb92']
+                });
+            }, 400);
+        }
+
+        // 지도 열기
+        function openMap() {
+            const query = `${selectedLocation} ${selectedMenu}`;
+            const url = `https://map.naver.com/v5/search/${encodeURIComponent(query)}`;
+            window.open(url, '_blank');
+        }
+
+        // 리셋
+        function reset() {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.classList.add('hidden');
+            selectedMenu = '';
+        }
+
+        // Enter 키 처리
+        document.getElementById('locationInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
