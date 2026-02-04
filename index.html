@@ -39,6 +39,60 @@
 
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: background 0.6s ease;
+        }
+
+        .dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        }
+
+        .dark-mode .bg-white {
+            background: #2d2d44 !important;
+            color: #e0e0e0 !important;
+        }
+
+        .dark-mode .text-gray-800 {
+            color: #e0e0e0 !important;
+        }
+
+        .dark-mode .text-gray-700 {
+            color: #b0b0b0 !important;
+        }
+
+        .dark-mode .text-gray-600 {
+            color: #a0a0a0 !important;
+        }
+
+        .dark-mode .text-gray-500 {
+            color: #909090 !important;
+        }
+
+        .dark-mode .border-gray-200 {
+            border-color: #404040 !important;
+        }
+
+        .dark-mode .bg-blue-50 {
+            background: #1e3a5f !important;
+        }
+
+        .dark-mode .border-blue-200 {
+            border-color: #2d5a8f !important;
+        }
+
+        .dark-mode .bg-gradient-to-r.from-yellow-100 {
+            background: linear-gradient(to right, #4a4a2e, #5a3a4a) !important;
+        }
+
+        .dark-mode .bg-gradient-to-r.from-blue-100 {
+            background: linear-gradient(to right, #2a2a4e, #3a2a5a) !important;
+        }
+
+        .dark-mode .bg-gray-200 {
+            background: #3a3a4a !important;
+        }
+
+        body {
+            transition: all 0.6s ease;
         }
 
         .button-hover {
@@ -71,8 +125,8 @@
                         </div>
                         <button 
                             onclick="getLocation()" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">
-                            🔄 새로고침
+                            class="bg-blue-500 text-white px-3 py-2 rounded-lg text-xl font-bold hover:bg-blue-600 transition-colors">
+                            🔄
                         </button>
                     </div>
                 </div>
@@ -123,7 +177,9 @@
                     <p class="text-sm font-bold text-gray-600 mb-2">오늘의 추천 메뉴</p>
                     <!-- Menu Emoji Icon -->
                     <div class="text-8xl my-4" id="menuEmoji">🍴</div>
-                    <p id="resultText" class="text-4xl font-black text-gray-800"></p>
+                    <p id="resultText" class="text-4xl font-black text-gray-800 mb-3"></p>
+                    <!-- Menu Comment -->
+                    <p id="menuComment" class="text-sm text-gray-600 italic px-4"></p>
                 </div>
                 
                 <button 
@@ -157,46 +213,49 @@
     <script>
         // 메뉴 데이터 (가격대 포함: low=1만원 이하, medium=1-3만원, high=3만원 이상)
         const lunchMenus = [
-            { name: '파스타', price: 'medium', emoji: '🍝', searchQuery: '파스타 맛집' },
-            { name: '중국집', price: 'low', emoji: '🥟', searchQuery: '중국집' },
-            { name: '브런치', price: 'medium', emoji: '🥞', searchQuery: '브런치 카페' },
-            { name: '칼국수', price: 'low', emoji: '🍜', searchQuery: '칼국수' },
-            { name: '초밥', price: 'medium', emoji: '🍣', searchQuery: '초밥 맛집' },
-            { name: '순대국밥', price: 'low', emoji: '🍲', searchQuery: '순대국밥' },
-            { name: '돼지갈비', price: 'medium', emoji: '🥓', searchQuery: '돼지갈비' },
-            { name: '샤브샤브', price: 'medium', emoji: '🍲', searchQuery: '샤브샤브' },
-            { name: '냉면', price: 'low', emoji: '🍜', searchQuery: '냉면' },
-            { name: '해장국', price: 'low', emoji: '🍲', searchQuery: '해장국' },
-            { name: '돈까스', price: 'low', emoji: '🍱', searchQuery: '돈까스' },
-            { name: '태국음식', price: 'medium', emoji: '🍛', searchQuery: '태국음식' },
-            { name: '베트남음식', price: 'low', emoji: '🍜', searchQuery: '베트남음식' },
-            { name: '라멘', price: 'low', emoji: '🍜', searchQuery: '라멘' },
-            { name: '쭈꾸미', price: 'medium', emoji: '🐙', searchQuery: '쭈꾸미 볶음' },
-            { name: '보리밥', price: 'low', emoji: '🍚', searchQuery: '보리밥 정식' },
-            { name: '패스트푸드', price: 'low', emoji: '🍔', searchQuery: '패스트푸드' }
+            { name: '파스타', price: 'medium', emoji: '🍝', searchQuery: '파스타 맛집', comment: '포크에 감아 먹는 순간, 이탈리아로 떠나볼까요?' },
+            { name: '중국집', price: 'low', emoji: '🥟', searchQuery: '중국집', comment: '짜장? 짬뽕? 고민은 배달의 시작이죠!' },
+            { name: '브런치', price: 'medium', emoji: '🥞', searchQuery: '브런치 카페', comment: '늦잠 자고 일어나도 괜찮은 유일한 식사!' },
+            { name: '칼국수', price: 'low', emoji: '🍜', searchQuery: '칼국수', comment: '후루룩 소리가 곧 행복입니다!' },
+            { name: '초밥', price: 'medium', emoji: '🍣', searchQuery: '초밥 맛집', comment: '한입에 쏙, 와사비는 적당히요!' },
+            { name: '순대국밥', price: 'low', emoji: '🍲', searchQuery: '순대국밥', comment: '해장의 정석, 새우젓 팍팍 넣어보세요!' },
+            { name: '돼지갈비', price: 'medium', emoji: '🥓', searchQuery: '돼지갈비', comment: '양념이 손가락까지 배도록 먹어야 제맛!' },
+            { name: '샤브샤브', price: 'medium', emoji: '🍲', searchQuery: '샤브샤브', comment: '살짝만 담갔다 빼세요, 참을성의 게임입니다!' },
+            { name: '냉면', price: 'low', emoji: '🍜', searchQuery: '냉면', comment: '가위는 자존심을 접고 써도 됩니다!' },
+            { name: '해장국', price: 'low', emoji: '🍲', searchQuery: '해장국', comment: '어젯밤의 후회를 말끔히 씻어드립니다!' },
+            { name: '돈까스', price: 'low', emoji: '🍱', searchQuery: '돈까스', comment: '바삭한 소리가 들릴 때까지 씹으세요!' },
+            { name: '태국음식', price: 'medium', emoji: '🍛', searchQuery: '태국음식', comment: '팟타이 한 입이면 방콕 여행 완료!' },
+            { name: '베트남음식', price: 'low', emoji: '🍜', searchQuery: '베트남음식', comment: '쌀국수 한 그릇이면 몸도 마음도 가벼워져요!' },
+            { name: '라멘', price: 'low', emoji: '🍜', searchQuery: '라멘', comment: '반숙 계란 터뜨리는 순간이 하이라이트!' },
+            { name: '쭈꾸미', price: 'medium', emoji: '🐙', searchQuery: '쭈꾸미 볶음', comment: '매운맛에 정신이 번쩍! 밥 한 공기는 기본!' },
+            { name: '보리밥', price: 'low', emoji: '🍚', searchQuery: '보리밥 정식', comment: '건강한 하루는 보리밥부터 시작이죠!' },
+            { name: '패스트푸드', price: 'low', emoji: '🍔', searchQuery: '패스트푸드', comment: '가볍게 먹고 남는 시간에 낮잠 한숨 어때요?' },
+            { name: '스테이크', price: 'high', emoji: '🥩', searchQuery: '스테이크 레스토랑', comment: '점심부터 미디엄 레어의 예술, 오늘은 나를 위한 날!' },
+            { name: '랍스터', price: 'high', emoji: '🦞', searchQuery: '랍스터 레스토랑', comment: '껍질 까는 수고도 럭셔리의 일부입니다!' },
+            { name: '오마카세', price: 'high', emoji: '🍱', searchQuery: '런치 오마카세', comment: '점심 오마카세, 이게 바로 진정한 자기 투자!' }
         ];
 
         const dinnerMenus = [
-            { name: '삼겹살', price: 'medium', emoji: '🥓', searchQuery: '삼겹살' },
-            { name: '한우', price: 'high', emoji: '🥩', searchQuery: '한우 맛집' },
-            { name: '갈비', price: 'high', emoji: '🍖', searchQuery: '갈비 맛집' },
-            { name: '양꼬치', price: 'medium', emoji: '�串', searchQuery: '양꼬치' },
-            { name: '곱창', price: 'medium', emoji: '🍢', searchQuery: '곱창' },
-            { name: '목살', price: 'medium', emoji: '🥓', searchQuery: '목살' },
-            { name: '항정살', price: 'medium', emoji: '🥓', searchQuery: '항정살' },
-            { name: '오리고기', price: 'medium', emoji: '🦆', searchQuery: '오리고기' },
-            { name: '족발', price: 'medium', emoji: '🍖', searchQuery: '족발' },
-            { name: '보쌈', price: 'medium', emoji: '🥩', searchQuery: '보쌈' },
-            { name: '치킨', price: 'low', emoji: '🍗', searchQuery: '치킨' },
-            { name: '스테이크', price: 'high', emoji: '🥩', searchQuery: '스테이크 레스토랑' },
-            { name: '와규', price: 'high', emoji: '🥩', searchQuery: '와규 맛집' },
-            { name: '숙성회', price: 'high', emoji: '🍣', searchQuery: '숙성회 맛집' },
-            { name: '대게', price: 'high', emoji: '🦀', searchQuery: '대게 맛집' },
-            { name: '킹크랩', price: 'high', emoji: '🦀', searchQuery: '킹크랩' },
-            { name: '연어', price: 'high', emoji: '🐟', searchQuery: '연어 요리' },
-            { name: '오마카세', price: 'high', emoji: '🍱', searchQuery: '오마카세' },
-            { name: '장어구이', price: 'high', emoji: '🐟', searchQuery: '장어구이' },
-            { name: '훠궈', price: 'medium', emoji: '🍲', searchQuery: '훠궈' }
+            { name: '삼겹살', price: 'medium', emoji: '🥓', searchQuery: '삼겹살', comment: '오늘 고기 굽는 소리에 스트레스도 같이 구워버리세요!' },
+            { name: '한우', price: 'high', emoji: '🥩', searchQuery: '한우 맛집', comment: '지갑은 가벼워지지만 마음은 풍족해집니다!' },
+            { name: '갈비', price: 'high', emoji: '🍖', searchQuery: '갈비 맛집', comment: '뼈 사이 살까지 발라먹는 진정한 미식가!' },
+            { name: '양꼬치', price: 'medium', emoji: '�串', searchQuery: '양꼬치', comment: '칭따오 한 병과 함께라면 완벽한 하루!' },
+            { name: '곱창', price: 'medium', emoji: '🍢', searchQuery: '곱창', comment: '쫄깃함 속에 숨겨진 고소함, 찾으셨나요?' },
+            { name: '목살', price: 'medium', emoji: '🥓', searchQuery: '목살', comment: '부드러움의 끝판왕, 잘못 먹다간 무한리필!' },
+            { name: '항정살', price: 'medium', emoji: '🥓', searchQuery: '항정살', comment: '마블링이 춤추는 이 순간을 놓치지 마세요!' },
+            { name: '오리고기', price: 'medium', emoji: '🦆', searchQuery: '오리고기', comment: '오리와 함께 날아가는 하루의 피로!' },
+            { name: '족발', price: 'medium', emoji: '🍖', searchQuery: '족발', comment: '쌈 싸먹는 재미에 벌써 배불러요!' },
+            { name: '보쌈', price: 'medium', emoji: '🥩', searchQuery: '보쌈', comment: '김치와 함께라면 밥도둑 등장!' },
+            { name: '치킨', price: 'low', emoji: '🍗', searchQuery: '치킨', comment: '후라이드냐 양념이냐, 그것이 문제로다!' },
+            { name: '스테이크', price: 'high', emoji: '🥩', searchQuery: '스테이크 레스토랑', comment: '미디움 레어의 예술, 감히 웰던이라 하지 마세요!' },
+            { name: '와규', price: 'high', emoji: '🥩', searchQuery: '와규 맛집', comment: '입에서 녹는 건 눈꽃송이가 아니라 와규입니다!' },
+            { name: '숙성회', price: 'high', emoji: '🍣', searchQuery: '숙성회 맛집', comment: '시간이 만들어낸 깊은 맛, 고급의 세계로!' },
+            { name: '대게', price: 'high', emoji: '🦀', searchQuery: '대게 맛집', comment: '게살 하나하나가 보물찾기, 인내심 필요!' },
+            { name: '킹크랩', price: 'high', emoji: '🦀', searchQuery: '킹크랩', comment: '다리 하나가 밥 한 공기, 왕의 식사!' },
+            { name: '연어', price: 'high', emoji: '🐟', searchQuery: '연어 요리', comment: '오메가3와 함께 건강도 충전!' },
+            { name: '오마카세', price: 'high', emoji: '🍱', searchQuery: '오마카세', comment: '요리사를 믿고 맡기는 순간, 미식의 시작!' },
+            { name: '장어구이', price: 'high', emoji: '🐟', searchQuery: '장어구이', comment: '스태미나 충전, 내일은 더 힘차게!' },
+            { name: '훠궈', price: 'medium', emoji: '🍲', searchQuery: '훠궈', comment: '0단계는 유죄, 오늘은 2단계 도전?' }
         ];
 
         let selectedMenu = '';
@@ -282,6 +341,14 @@
                 return;
             }
 
+            // 다크 모드 토글
+            const body = document.body;
+            if (type === 'dinner') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
             const menus = type === 'lunch' ? lunchMenus : dinnerMenus;
             // 선택된 금액대에 맞는 메뉴만 필터링
             const filteredMenus = menus.filter(menu => menu.price === selectedPrice);
@@ -327,10 +394,12 @@
             const resultSection = document.getElementById('resultSection');
             const resultText = document.getElementById('resultText');
             const menuEmoji = document.getElementById('menuEmoji');
+            const menuComment = document.getElementById('menuComment');
 
             animationDisplay.classList.add('hidden');
             resultText.textContent = selectedMenu;
             menuEmoji.textContent = selectedMenuItem.emoji;
+            menuComment.textContent = selectedMenuItem.comment;
             
             resultSection.classList.remove('hidden');
             resultSection.classList.add('result-appear');
@@ -378,6 +447,8 @@
             resultSection.classList.add('hidden');
             selectedMenu = '';
             selectedSearchQuery = '';
+            // 다크 모드 해제
+            document.body.classList.remove('dark-mode');
         }
     </script>
 </body>
