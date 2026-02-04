@@ -79,7 +79,7 @@
 
                 <!-- Price Range Section -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-3">💰 인당 금액대</label>
+                    <label id="priceLabel" class="block text-sm font-bold text-gray-700 mb-3">💰 오늘 얼마 쓸까?</label>
                     <div class="grid grid-cols-3 gap-2">
                         <button 
                             onclick="selectPrice('low')" 
@@ -205,9 +205,24 @@
         let userLongitude = null;
         let selectedPrice = null;
 
-        // 페이지 로드 시 위치 가져오기
+        // 예산 관련 랜덤 문구들
+        const priceLabelTexts = [
+            '💰 오늘 얼마 쓸까?',
+            '💰 예산은 어때?',
+            '💰 지갑 사정은?',
+            '💰 얼마나 쓸래?',
+            '💰 가격대는?',
+            '💰 예산 체크!',
+            '💰 돈은 얼마?',
+            '💰 오늘 예산'
+        ];
+
+        // 페이지 로드 시 위치 가져오기 및 랜덤 문구 설정
         window.addEventListener('DOMContentLoaded', () => {
             getLocation();
+            // 랜덤 문구 설정
+            const randomLabel = priceLabelTexts[Math.floor(Math.random() * priceLabelTexts.length)];
+            document.getElementById('priceLabel').textContent = randomLabel;
         });
 
         // 위치 정보 가져오기
