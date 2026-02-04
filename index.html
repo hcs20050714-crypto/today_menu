@@ -61,16 +61,45 @@
                 <p class="text-gray-500 text-sm">고민 끝! 메뉴 추천받기</p>
             </div>
 
-            <!-- Input Section -->
+            <!-- Location Section -->
             <div class="space-y-4">
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-bold text-gray-700">📍 현재 위치</p>
+                            <p id="locationText" class="text-xs text-gray-500 mt-1">위치 정보를 가져오는 중...</p>
+                        </div>
+                        <button 
+                            onclick="getLocation()" 
+                            class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">
+                            🔄 새로고침
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Price Range Section -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">지역명</label>
-                    <input 
-                        type="text" 
-                        id="locationInput"
-                        placeholder="예: 나성동, 강남역"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
-                    >
+                    <label class="block text-sm font-bold text-gray-700 mb-3">💰 인당 금액대</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button 
+                            onclick="selectPrice('low')" 
+                            id="priceLow"
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
+                            ~1만원
+                        </button>
+                        <button 
+                            onclick="selectPrice('medium')" 
+                            id="priceMedium"
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
+                            1~3만원
+                        </button>
+                        <button 
+                            onclick="selectPrice('high')" 
+                            id="priceHigh"
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
+                            3만원~
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Button Group -->
@@ -92,6 +121,8 @@
             <div id="resultSection" class="hidden space-y-4">
                 <div class="bg-gradient-to-r from-yellow-100 to-pink-100 rounded-2xl p-6 text-center">
                     <p class="text-sm font-bold text-gray-600 mb-2">오늘의 추천 메뉴</p>
+                    <!-- Menu Emoji Icon -->
+                    <div class="text-8xl my-4" id="menuEmoji">🍴</div>
                     <p id="resultText" class="text-4xl font-black text-gray-800"></p>
                 </div>
                 
@@ -124,38 +155,131 @@
     </div>
 
     <script>
-        // 메뉴 데이터
+        // 메뉴 데이터 (가격대 포함: low=1만원 이하, medium=1-3만원, high=3만원 이상)
         const lunchMenus = [
-            '김치찌개', '된장찌개', '돈가스', '쌀국수', '김밥',
-            '짜장면', '짬뽕', '비빔밥', '제육볶음', '불고기',
-            '순두부찌개', '냉면', '칼국수', '우동', '라면',
-            '김치볶음밥', '오므라이스', '샌드위치', '파스타', '햄버거'
+            { name: '김치찌개', price: 'low', emoji: '🥘' },
+            { name: '된장찌개', price: 'low', emoji: '🍲' },
+            { name: '돈가스', price: 'low', emoji: '🍱' },
+            { name: '쌀국수', price: 'low', emoji: '🍜' },
+            { name: '김밥', price: 'low', emoji: '🍙' },
+            { name: '짜장면', price: 'low', emoji: '🍝' },
+            { name: '짬뽕', price: 'low', emoji: '🍜' },
+            { name: '비빔밥', price: 'low', emoji: '🍚' },
+            { name: '제육볶음', price: 'medium', emoji: '🥓' },
+            { name: '불고기', price: 'medium', emoji: '🥩' },
+            { name: '순두부찌개', price: 'low', emoji: '🍲' },
+            { name: '냉면', price: 'low', emoji: '🍜' },
+            { name: '칼국수', price: 'low', emoji: '🍜' },
+            { name: '우동', price: 'low', emoji: '🍜' },
+            { name: '라면', price: 'low', emoji: '🍜' },
+            { name: '김치볶음밥', price: 'low', emoji: '🍚' },
+            { name: '오므라이스', price: 'medium', emoji: '🍳' },
+            { name: '샌드위치', price: 'medium', emoji: '🥪' },
+            { name: '파스타', price: 'medium', emoji: '🍝' },
+            { name: '햄버거', price: 'medium', emoji: '🍔' }
         ];
 
         const dinnerMenus = [
-            '한우', '숙성회', '양꼬치', '곱창', '삼겹살',
-            '갈비', '초밥', '샤브샤브', '스테이크', '훠궈',
-            '연어', '랍스터', '킹크랩', '전복', '모둠회',
-            '오마카세', '와규', '장어구이', '대게', '고등어회'
+            { name: '한우', price: 'high', emoji: '🥩' },
+            { name: '숙성회', price: 'high', emoji: '🍣' },
+            { name: '양꼬치', price: 'medium', emoji: '�串' },
+            { name: '곱창', price: 'medium', emoji: '🍢' },
+            { name: '삼겹살', price: 'medium', emoji: '🥓' },
+            { name: '갈비', price: 'high', emoji: '🍖' },
+            { name: '초밥', price: 'medium', emoji: '🍣' },
+            { name: '샤브샤브', price: 'medium', emoji: '🍲' },
+            { name: '스테이크', price: 'high', emoji: '🥩' },
+            { name: '훠궈', price: 'medium', emoji: '🍲' },
+            { name: '연어', price: 'high', emoji: '🐟' },
+            { name: '랍스터', price: 'high', emoji: '🦞' },
+            { name: '킹크랩', price: 'high', emoji: '🦀' },
+            { name: '전복', price: 'high', emoji: '🐚' },
+            { name: '모둠회', price: 'medium', emoji: '🍣' },
+            { name: '오마카세', price: 'high', emoji: '🍱' },
+            { name: '와규', price: 'high', emoji: '🥩' },
+            { name: '장어구이', price: 'high', emoji: '🐟' },
+            { name: '대게', price: 'high', emoji: '🦀' },
+            { name: '고등어회', price: 'medium', emoji: '🐟' }
         ];
 
         let selectedMenu = '';
-        let selectedLocation = '';
+        let userLatitude = null;
+        let userLongitude = null;
+        let selectedPrice = null;
 
-        // 메뉴 선택 함수
-        function selectMenu(type) {
-            const location = document.getElementById('locationInput').value.trim();
+        // 페이지 로드 시 위치 가져오기
+        window.addEventListener('DOMContentLoaded', () => {
+            getLocation();
+        });
+
+        // 위치 정보 가져오기
+        function getLocation() {
+            const locationText = document.getElementById('locationText');
             
-            if (!location) {
-                alert('지역명을 입력해주세요! 😊');
+            if (!navigator.geolocation) {
+                locationText.textContent = '위치 서비스를 지원하지 않는 브라우저입니다.';
                 return;
             }
 
-            selectedLocation = location;
+            locationText.textContent = '위치 정보를 가져오는 중...';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+                    locationText.textContent = `위치 확인 완료! (${userLatitude.toFixed(4)}, ${userLongitude.toFixed(4)})`;
+                },
+                (error) => {
+                    let errorMsg = '위치 정보를 가져올 수 없습니다.';
+                    if (error.code === error.PERMISSION_DENIED) {
+                        errorMsg = '위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.';
+                    }
+                    locationText.textContent = errorMsg;
+                    userLatitude = 37.5665; // 서울 기본 좌표
+                    userLongitude = 126.9780;
+                }
+            );
+        }
+
+        // 금액대 선택 함수
+        function selectPrice(price) {
+            selectedPrice = price;
+            
+            // 모든 버튼 초기화
+            document.querySelectorAll('.price-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-purple-500', 'to-pink-500', 'text-white', 'border-purple-500');
+                btn.classList.add('border-gray-200');
+            });
+            
+            // 선택된 버튼 스타일 적용
+            const selectedBtn = document.getElementById('price' + price.charAt(0).toUpperCase() + price.slice(1));
+            selectedBtn.classList.remove('border-gray-200');
+            selectedBtn.classList.add('bg-gradient-to-r', 'from-purple-500', 'to-pink-500', 'text-white', 'border-purple-500');
+        }
+
+        // 메뉴 선택 함수
+        function selectMenu(type) {
+            if (userLatitude === null || userLongitude === null) {
+                alert('위치 정보를 가져오는 중입니다. 잠시만 기다려주세요! 😊');
+                return;
+            }
+
+            if (!selectedPrice) {
+                alert('금액대를 선택해주세요! 💰');
+                return;
+            }
+
             const menus = type === 'lunch' ? lunchMenus : dinnerMenus;
+            // 선택된 금액대에 맞는 메뉴만 필터링
+            const filteredMenus = menus.filter(menu => menu.price === selectedPrice);
+            
+            if (filteredMenus.length === 0) {
+                alert('해당 금액대에 추천할 메뉴가 없습니다. 다른 금액대를 선택해주세요!');
+                return;
+            }
             
             // 애니메이션 시작
-            showAnimation(menus);
+            showAnimation(filteredMenus);
         }
 
         // 애니메이션 표시
@@ -170,7 +294,7 @@
             let counter = 0;
             const interval = setInterval(() => {
                 const randomMenu = menus[Math.floor(Math.random() * menus.length)];
-                animationText.textContent = randomMenu;
+                animationText.textContent = randomMenu.name;
                 counter++;
 
                 if (counter >= 10) { // 1초 동안 (100ms * 10)
@@ -182,14 +306,18 @@
 
         // 결과 표시
         function showResult(menus) {
-            selectedMenu = menus[Math.floor(Math.random() * menus.length)];
+            const selectedMenuItem = menus[Math.floor(Math.random() * menus.length)];
+            selectedMenu = selectedMenuItem.name;
             
             const animationDisplay = document.getElementById('animationDisplay');
             const resultSection = document.getElementById('resultSection');
             const resultText = document.getElementById('resultText');
+            const menuEmoji = document.getElementById('menuEmoji');
 
             animationDisplay.classList.add('hidden');
             resultText.textContent = selectedMenu;
+            menuEmoji.textContent = selectedMenuItem.emoji;
+            
             resultSection.classList.remove('hidden');
             resultSection.classList.add('result-appear');
 
@@ -225,8 +353,8 @@
 
         // 지도 열기
         function openMap() {
-            const query = `${selectedLocation} ${selectedMenu}`;
-            const url = `https://map.naver.com/v5/search/${encodeURIComponent(query)}`;
+            // 네이버 지도 - 좌표와 검색어 기반
+            const url = `https://map.naver.com/v5/search/${encodeURIComponent(selectedMenu)}?c=${userLongitude},${userLatitude},15,0,0,0,dh`;
             window.open(url, '_blank');
         }
 
@@ -236,13 +364,6 @@
             resultSection.classList.add('hidden');
             selectedMenu = '';
         }
-
-        // Enter 키 처리
-        document.getElementById('locationInput').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-            }
-        });
     </script>
 </body>
 </html>
