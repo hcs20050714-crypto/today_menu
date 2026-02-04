@@ -84,20 +84,20 @@
                         <button 
                             onclick="selectPrice('low')" 
                             id="priceLow"
-                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
-                            ~1만원
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-2xl transition-all hover:border-purple-400">
+                            💵
                         </button>
                         <button 
                             onclick="selectPrice('medium')" 
                             id="priceMedium"
-                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
-                            1~3만원
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-2xl transition-all hover:border-purple-400">
+                            💵💵
                         </button>
                         <button 
                             onclick="selectPrice('high')" 
                             id="priceHigh"
-                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-sm transition-all hover:border-purple-400">
-                            3만원~
+                            class="price-btn py-3 rounded-xl border-2 border-gray-200 font-bold text-2xl transition-all hover:border-purple-400">
+                            💵💵💵
                         </button>
                     </div>
                 </div>
@@ -157,52 +157,50 @@
     <script>
         // 메뉴 데이터 (가격대 포함: low=1만원 이하, medium=1-3만원, high=3만원 이상)
         const lunchMenus = [
-            { name: '김치찌개', price: 'low', emoji: '🥘' },
-            { name: '된장찌개', price: 'low', emoji: '🍲' },
-            { name: '돈가스', price: 'low', emoji: '🍱' },
-            { name: '쌀국수', price: 'low', emoji: '🍜' },
-            { name: '김밥', price: 'low', emoji: '🍙' },
-            { name: '짜장면', price: 'low', emoji: '🍝' },
-            { name: '짬뽕', price: 'low', emoji: '🍜' },
-            { name: '비빔밥', price: 'low', emoji: '🍚' },
-            { name: '제육볶음', price: 'medium', emoji: '🥓' },
-            { name: '불고기', price: 'medium', emoji: '🥩' },
-            { name: '순두부찌개', price: 'low', emoji: '🍲' },
-            { name: '냉면', price: 'low', emoji: '🍜' },
-            { name: '칼국수', price: 'low', emoji: '🍜' },
-            { name: '우동', price: 'low', emoji: '🍜' },
-            { name: '라면', price: 'low', emoji: '🍜' },
-            { name: '김치볶음밥', price: 'low', emoji: '🍚' },
-            { name: '오므라이스', price: 'medium', emoji: '🍳' },
-            { name: '샌드위치', price: 'medium', emoji: '🥪' },
-            { name: '파스타', price: 'medium', emoji: '🍝' },
-            { name: '햄버거', price: 'medium', emoji: '🍔' }
+            { name: '파스타', price: 'medium', emoji: '🍝', searchQuery: '파스타 맛집' },
+            { name: '중국집', price: 'low', emoji: '🥟', searchQuery: '중국집' },
+            { name: '브런치', price: 'medium', emoji: '🥞', searchQuery: '브런치 카페' },
+            { name: '칼국수', price: 'low', emoji: '🍜', searchQuery: '칼국수' },
+            { name: '초밥', price: 'medium', emoji: '🍣', searchQuery: '초밥 맛집' },
+            { name: '순대국밥', price: 'low', emoji: '🍲', searchQuery: '순대국밥' },
+            { name: '돼지갈비', price: 'medium', emoji: '🥓', searchQuery: '돼지갈비' },
+            { name: '샤브샤브', price: 'medium', emoji: '🍲', searchQuery: '샤브샤브' },
+            { name: '냉면', price: 'low', emoji: '🍜', searchQuery: '냉면' },
+            { name: '해장국', price: 'low', emoji: '🍲', searchQuery: '해장국' },
+            { name: '돈까스', price: 'low', emoji: '🍱', searchQuery: '돈까스' },
+            { name: '태국음식', price: 'medium', emoji: '🍛', searchQuery: '태국음식' },
+            { name: '베트남음식', price: 'low', emoji: '🍜', searchQuery: '베트남음식' },
+            { name: '라멘', price: 'low', emoji: '🍜', searchQuery: '라멘' },
+            { name: '쭈꾸미', price: 'medium', emoji: '🐙', searchQuery: '쭈꾸미 볶음' },
+            { name: '보리밥', price: 'low', emoji: '🍚', searchQuery: '보리밥 정식' },
+            { name: '패스트푸드', price: 'low', emoji: '🍔', searchQuery: '패스트푸드' }
         ];
 
         const dinnerMenus = [
-            { name: '한우', price: 'high', emoji: '🥩' },
-            { name: '숙성회', price: 'high', emoji: '🍣' },
-            { name: '양꼬치', price: 'medium', emoji: '�串' },
-            { name: '곱창', price: 'medium', emoji: '🍢' },
-            { name: '삼겹살', price: 'medium', emoji: '🥓' },
-            { name: '갈비', price: 'high', emoji: '🍖' },
-            { name: '초밥', price: 'medium', emoji: '🍣' },
-            { name: '샤브샤브', price: 'medium', emoji: '🍲' },
-            { name: '스테이크', price: 'high', emoji: '🥩' },
-            { name: '훠궈', price: 'medium', emoji: '🍲' },
-            { name: '연어', price: 'high', emoji: '🐟' },
-            { name: '랍스터', price: 'high', emoji: '🦞' },
-            { name: '킹크랩', price: 'high', emoji: '🦀' },
-            { name: '전복', price: 'high', emoji: '🐚' },
-            { name: '모둠회', price: 'medium', emoji: '🍣' },
-            { name: '오마카세', price: 'high', emoji: '🍱' },
-            { name: '와규', price: 'high', emoji: '🥩' },
-            { name: '장어구이', price: 'high', emoji: '🐟' },
-            { name: '대게', price: 'high', emoji: '🦀' },
-            { name: '고등어회', price: 'medium', emoji: '🐟' }
+            { name: '삼겹살', price: 'medium', emoji: '🥓', searchQuery: '삼겹살' },
+            { name: '한우', price: 'high', emoji: '🥩', searchQuery: '한우 맛집' },
+            { name: '갈비', price: 'high', emoji: '🍖', searchQuery: '갈비 맛집' },
+            { name: '양꼬치', price: 'medium', emoji: '�串', searchQuery: '양꼬치' },
+            { name: '곱창', price: 'medium', emoji: '🍢', searchQuery: '곱창' },
+            { name: '목살', price: 'medium', emoji: '🥓', searchQuery: '목살' },
+            { name: '항정살', price: 'medium', emoji: '🥓', searchQuery: '항정살' },
+            { name: '오리고기', price: 'medium', emoji: '🦆', searchQuery: '오리고기' },
+            { name: '족발', price: 'medium', emoji: '🍖', searchQuery: '족발' },
+            { name: '보쌈', price: 'medium', emoji: '🥩', searchQuery: '보쌈' },
+            { name: '치킨', price: 'low', emoji: '🍗', searchQuery: '치킨' },
+            { name: '스테이크', price: 'high', emoji: '🥩', searchQuery: '스테이크 레스토랑' },
+            { name: '와규', price: 'high', emoji: '🥩', searchQuery: '와규 맛집' },
+            { name: '숙성회', price: 'high', emoji: '🍣', searchQuery: '숙성회 맛집' },
+            { name: '대게', price: 'high', emoji: '🦀', searchQuery: '대게 맛집' },
+            { name: '킹크랩', price: 'high', emoji: '🦀', searchQuery: '킹크랩' },
+            { name: '연어', price: 'high', emoji: '🐟', searchQuery: '연어 요리' },
+            { name: '오마카세', price: 'high', emoji: '🍱', searchQuery: '오마카세' },
+            { name: '장어구이', price: 'high', emoji: '🐟', searchQuery: '장어구이' },
+            { name: '훠궈', price: 'medium', emoji: '🍲', searchQuery: '훠궈' }
         ];
 
         let selectedMenu = '';
+        let selectedSearchQuery = '';
         let userLatitude = null;
         let userLongitude = null;
         let selectedPrice = null;
@@ -308,6 +306,7 @@
         function showResult(menus) {
             const selectedMenuItem = menus[Math.floor(Math.random() * menus.length)];
             selectedMenu = selectedMenuItem.name;
+            selectedSearchQuery = selectedMenuItem.searchQuery;
             
             const animationDisplay = document.getElementById('animationDisplay');
             const resultSection = document.getElementById('resultSection');
@@ -354,7 +353,7 @@
         // 지도 열기
         function openMap() {
             // 네이버 지도 - 좌표와 검색어 기반
-            const url = `https://map.naver.com/v5/search/${encodeURIComponent(selectedMenu)}?c=${userLongitude},${userLatitude},15,0,0,0,dh`;
+            const url = `https://map.naver.com/v5/search/${encodeURIComponent(selectedSearchQuery)}?c=${userLongitude},${userLatitude},15,0,0,0,dh`;
             window.open(url, '_blank');
         }
 
@@ -363,6 +362,7 @@
             const resultSection = document.getElementById('resultSection');
             resultSection.classList.add('hidden');
             selectedMenu = '';
+            selectedSearchQuery = '';
         }
     </script>
 </body>
